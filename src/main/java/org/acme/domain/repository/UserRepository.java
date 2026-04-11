@@ -1,5 +1,6 @@
 package org.acme.domain.repository;
 
+import org.acme.domain.models.Todo;
 import org.acme.domain.models.User;
 
 import java.util.Optional;

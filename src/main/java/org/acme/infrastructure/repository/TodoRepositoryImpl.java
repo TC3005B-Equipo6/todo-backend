@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.acme.domain.models.Todo;
 import org.acme.domain.repository.TodoRepository;
 import org.acme.infrastructure.entities.TodoEntity;
+import org.acme.infrastructure.entities.UserEntity;
 import org.acme.infrastructure.mapper.TodoMapper;
 
 import java.util.ArrayList;
@@ -32,5 +33,15 @@ public class TodoRepositoryImpl implements TodoRepository, PanacheRepositoryBase
             response.add(TodoMapper.toDomain(entity));
         }
         return response;
+    }
+
+    @Override
+    public boolean deleteById(UUID id){
+        TodoEntity todoEntity = findById(id);
+        if  (todoEntity == null) {
+            return false;
+        }
+        delete(todoEntity);
+        return true;
     }
 }
