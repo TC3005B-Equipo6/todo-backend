@@ -35,10 +35,8 @@ public class TodoResource {
     @DELETE
     @Path("/{id}")
     @Transactional
-    public Response delete(@PathParam("id") Long id) {
-        // 🐛 BUG INTENCIONAL: ignoramos el id recibido
-        //    y siempre borramos el ToDo con id = 1
-        boolean deleted = deleteTodoUseCase.execute(UUID.fromString("1"));
+    public Response delete(@PathParam("id") UUID id) {
+        boolean deleted = deleteTodoUseCase.execute(id);
         return deleted
                 ? Response.noContent().build()
                 : Response.status(404).build();
