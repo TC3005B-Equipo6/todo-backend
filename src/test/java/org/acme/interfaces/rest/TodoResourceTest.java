@@ -48,4 +48,15 @@ class TodoResourceTest {
         assertEquals("Clean Architecture", persisted.getDescription());
         assertNotNull(persisted.getCreatedAt());
     }
+
+    @Test
+    void deleteShouldRemoveTheRequestedId() {
+        Long id1 = createTodo("a");
+        Long id2 = createTodo("b");
+        given().when().delete("/todos/" + id2)
+                .then().statusCode(204);
+        given().when().get("/todos")
+                .then().body("id", hasItem(id1.intValue()))
+                .body("id", not(hasItem(id2.intValue())));
+    }
 }
