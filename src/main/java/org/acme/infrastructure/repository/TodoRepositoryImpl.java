@@ -43,4 +43,14 @@ public class TodoRepositoryImpl implements TodoRepository, PanacheRepositoryBase
         delete(todoEntity);
         return true;
     }
+
+    @Override
+    public List<Todo> list(){
+        List<TodoEntity> entities = listAll();
+        List<Todo> todos = new ArrayList<>();
+        for (TodoEntity entity: entities){
+            todos.add(TodoMapper.toDomain(entity));
+        }
+        return todos;
+    }
 }
