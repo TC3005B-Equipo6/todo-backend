@@ -1,13 +1,22 @@
 steps:
+
+  - name: 'maven:3.9.6-eclipse-temurin-17'
+    entrypoint: 'mvn'
+    args: ['clean', 'package', '-Dmaven.test.skip=true']
+
+ 
   - name: 'gcr.io/cloud-builders/docker'
     args: 
       - 'build'
       - '-t'
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}:latest'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/todo/todo-backend:latest'
       - '.'
+
+ 
   - name: 'gcr.io/cloud-builders/docker'
     args: 
       - 'push'
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}:latest'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/todo/todo-backend:latest'
+
 images:
-  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}:latest'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/todo/todo-backend:latest'
