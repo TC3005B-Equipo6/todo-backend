@@ -7,6 +7,7 @@ import org.acme.domain.repository.TodoRepository;
 
 import java.util.List;
 
+@ApplicationScoped
 public class ListUseCase {
     private final TodoRepository todoRepository;
 
