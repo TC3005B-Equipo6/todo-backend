@@ -10,7 +10,6 @@ import org.acme.infrastructure.mapper.TodoMapper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -56,7 +55,7 @@ public class TodoRepositoryImpl implements TodoRepository, PanacheRepositoryBase
     }
 
     @Override
-    public Optional<Todo> findTodoById(UUID id) {
-        return findByIdOptional(id).map(TodoMapper::toDomain);
+    public Todo findTodoById(UUID id) {
+        return TodoMapper.toDomain(findById(id));
     }
 }

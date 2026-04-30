@@ -5,7 +5,6 @@ import jakarta.inject.Inject;
 import org.acme.domain.models.Todo;
 import org.acme.domain.repository.TodoRepository;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -18,7 +17,7 @@ public class GetTodoByIdUseCase {
         this.todoRepository = todoRepository;
     }
 
-    public Optional<Todo> execute(UUID id) {
+    public Todo execute(UUID id) {
         return todoRepository.findTodoById(id);
     }
 }
