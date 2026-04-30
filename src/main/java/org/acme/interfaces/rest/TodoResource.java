@@ -8,6 +8,7 @@ import jakarta.ws.rs.core.Response;
 import org.acme.application.dto.CreateTodoDto;
 import org.acme.application.usecase.CreateTodoUseCase;
 import org.acme.application.usecase.DeleteTodoUseCase;
+import org.acme.application.usecase.GetTodoByIdUseCase;
 import org.acme.application.usecase.ListUseCase;
 import org.acme.domain.models.Todo;
 
@@ -22,14 +23,17 @@ public class TodoResource {
     private final CreateTodoUseCase createTodoUseCase;
     private final DeleteTodoUseCase deleteTodoUseCase;
     private final ListUseCase listUseCase;
+    private final GetTodoByIdUseCase getTodoByIdUseCase;
 
     @Inject
     public TodoResource(CreateTodoUseCase createTodoUseCase,
                         DeleteTodoUseCase deleteTodoUseCase,
-                        ListUseCase listUseCase) {
+                        ListUseCase listUseCase,
+                        GetTodoByIdUseCase getTodoByIdUseCase) {
         this.createTodoUseCase = createTodoUseCase;
         this.deleteTodoUseCase = deleteTodoUseCase;
         this.listUseCase = listUseCase;
+        this.getTodoByIdUseCase = getTodoByIdUseCase;
     }
 
     @POST
@@ -52,5 +56,13 @@ public class TodoResource {
     public Response list(){
         List<Todo> todos = listUseCase.execute();
         return Response.ok(todos).build();
+    }
+
+    @GET
+    @Path("/{id}")
+    public Response getById(@PathParam("id") UUID id) {
+        return getTodoByIdUseCase.execute(id)
+                .map(todo -> Response.ok(todo).build())
+                .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 }
