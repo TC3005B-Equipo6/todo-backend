@@ -61,8 +61,7 @@ public class TodoResource {
     @GET
     @Path("/{id}")
     public Response getById(@PathParam("id") UUID id) {
-        return getTodoByIdUseCase.execute(id)
-                .map(todo -> Response.ok(todo).build())
-                .orElse(Response.status(Response.Status.NOT_FOUND).build());
+        Todo todo = getTodoByIdUseCase.execute(id);
+        return Response.ok(todo).build();
     }
 }
