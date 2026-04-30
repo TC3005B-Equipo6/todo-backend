@@ -9,11 +9,11 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/status")
 @Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@Produces(MediaType.TEXT_PLAIN)
 public class StatusResource {
 
     @GET
     public Response status(){
-        return Response.ok("Weolcome").build();
+        return Response.ok("Welcome").build();
     }
 }

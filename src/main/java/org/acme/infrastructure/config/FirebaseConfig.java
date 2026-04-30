@@ -31,7 +31,7 @@ public class FirebaseConfig {
                 }
             }
         } catch (Exception e){
-
+            throw new RuntimeException("Error inicializando Firebase", e);
         }
     }
 }
