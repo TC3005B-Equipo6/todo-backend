@@ -3,6 +3,7 @@ package org.acme.domain.repository;
 import org.acme.domain.models.Todo;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface TodoRepository {
@@ -10,4 +11,5 @@ public interface TodoRepository {
     List<Todo> findAllTodos();
     boolean deleteById(UUID id);
     List<Todo> list();
+    Optional<Todo> findTodoById(UUID id);
 }
