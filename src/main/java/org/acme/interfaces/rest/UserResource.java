@@ -1,36 +1,27 @@
 package org.acme.interfaces.rest;
 
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.acme.application.dto.RegisterUserDto;
-import org.acme.application.usecase.DeleteTodoUseCase;
-import org.acme.application.usecase.RegisterUserUseCase;
-import org.acme.infrastructure.security.AuthContext;
+import org.acme.application.dto.todo.RegisterUserDTO;
+import org.acme.application.security.PermitPublic;
+import org.acme.application.usecase.user.RegisterUserUseCase;
 
-import java.util.UUID;
-
-@Path("/users")
+@Path("/user")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
-    @Inject
-    RegisterUserUseCase registerUserUseCase;
+    private final RegisterUserUseCase registerUserUseCase;
 
-    @Inject
-    AuthContext authContext;
-
-    public UserResource(RegisterUserUseCase registerUserUseCase, AuthContext authContext){
+    public UserResource(RegisterUserUseCase registerUserUseCase){
         this.registerUserUseCase = registerUserUseCase;
-        this.authContext = authContext;
     }
 
     @POST
-    public Response registerUser(@Valid RegisterUserDto registerUserDto) {
+    @PermitPublic
+    public Response registerUser(@Valid RegisterUserDTO registerUserDto) {
         try {
             return Response.ok(registerUserUseCase.execute(registerUserDto)).build();
         }catch (Exception e){
@@ -41,7 +32,6 @@ public class UserResource {
     @Path("/test")
     @GET
     public Response testEndpoint(){
-        System.out.println("En el endpoint: "+authContext.getUser().getId());
-        return Response.ok("Hello").build();
+        return Response.ok("Hello desde endpoint protegido").build();
     }
 }

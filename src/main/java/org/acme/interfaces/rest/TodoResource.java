@@ -1,21 +1,19 @@
 package org.acme.interfaces.rest;
 
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.acme.application.dto.CreateTodoDto;
-import org.acme.application.usecase.CreateTodoUseCase;
-import org.acme.application.usecase.DeleteTodoUseCase;
-import org.acme.application.usecase.GetTodoByIdUseCase;
-import org.acme.application.usecase.ListUseCase;
-import org.acme.domain.models.Todo;
+import org.acme.application.dto.todo.CreateTodoDTO;
+import org.acme.application.usecase.todo.CreateTodoUseCase;
+import org.acme.application.usecase.todo.DeleteTodoUseCase;
+import org.acme.application.usecase.todo.GetTodoByIdUseCase;
+import org.acme.application.usecase.todo.ListUseCase;
+import org.acme.domain.exception.TodoNotFoundException;
 
-import java.util.List;
 import java.util.UUID;
 
-@Path("/todos")
+@Path("/todo")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class TodoResource {
@@ -25,7 +23,6 @@ public class TodoResource {
     private final ListUseCase listUseCase;
     private final GetTodoByIdUseCase getTodoByIdUseCase;
 
-    @Inject
     public TodoResource(CreateTodoUseCase createTodoUseCase,
                         DeleteTodoUseCase deleteTodoUseCase,
                         ListUseCase listUseCase,
@@ -37,31 +34,34 @@ public class TodoResource {
     }
 
     @POST
-    public Response createTodo(CreateTodoDto todoDto) {
-        Todo todo= createTodoUseCase.execute(todoDto);
-        return Response.ok(todo).build();
+    public Response createTodo(CreateTodoDTO todoDto) {
+        return Response.status(Response.Status.CREATED).entity(createTodoUseCase.execute(todoDto)).build();
     }
 
     @DELETE
     @Path("/{id}")
     @Transactional
     public Response delete(@PathParam("id") UUID id) {
-        boolean deleted = deleteTodoUseCase.execute(id);
-        return deleted
-                ? Response.noContent().build()
-                : Response.status(404).build();
+        try {
+            deleteTodoUseCase.execute(id);
+            return Response.noContent().build();
+        } catch ( TodoNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
     }
 
     @GET
     public Response list(){
-        List<Todo> todos = listUseCase.execute();
-        return Response.ok(todos).build();
+        return Response.ok(listUseCase.execute()).build();
     }
 
     @GET
     @Path("/{id}")
     public Response getById(@PathParam("id") UUID id) {
-        Todo todo = getTodoByIdUseCase.execute(id);
-        return Response.ok(todo).build();
+        try {
+            return Response.ok(getTodoByIdUseCase.execute(id)).build();
+        } catch (TodoNotFoundException e){
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
     }
 }
