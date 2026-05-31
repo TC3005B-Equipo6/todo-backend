@@ -1,34 +1,52 @@
 package org.acme.infrastructure.security;
 
+import org.acme.application.security.PermitPublic;
+import org.acme.domain.model.User;
+import org.acme.domain.repository.UserRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
+
+import io.quarkus.arc.profile.UnlessBuildProfile;
+
 import jakarta.annotation.Priority;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
-import org.acme.domain.models.User;
-import org.acme.domain.repository.UserRepository;
 
-import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Optional;
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
+@UnlessBuildProfile("test")
 public class FirebaseAuthFilter implements ContainerRequestFilter {
-    @Inject
-    UserRepository userRepository;
-    @Inject
-    AuthContext authContext;
+
+    private final UserRepository userRepository;
+    private final AuthContext authContext;
+    private final ResourceInfo resourceInfo;
+
+    public FirebaseAuthFilter(UserRepository userRepository, AuthContext authContext, ResourceInfo resourceInfo) {
+        this.userRepository = userRepository;
+        this.authContext = authContext;
+        this.resourceInfo = resourceInfo;
+    }
 
     @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
+    public void filter(ContainerRequestContext requestContext) {
+
         String path=requestContext.getUriInfo().getPath();
         System.out.println(path);
-        if(path.equals("/users") || path.equals("/status")){
+
+        Method method = resourceInfo.getResourceMethod();
+        Class<?> resourceClass = resourceInfo.getResourceClass();
+        boolean isPublic = method.isAnnotationPresent(PermitPublic.class)
+                || resourceClass.isAnnotationPresent(PermitPublic.class);
+
+        if (isPublic) {
             return;
         }
 
@@ -53,14 +71,15 @@ public class FirebaseAuthFilter implements ContainerRequestFilter {
                     .getInstance()
                     .verifyIdToken(token,true);
             Optional<User> userOptional= userRepository.findByFirebaseUuid(decodedToken.getUid());
-            if(userOptional.isEmpty()){
-                requestContext.abortWith(
-                        Response.status(Response.Status.UNAUTHORIZED)
-                                .entity("No autorizado").build()
-                );
+            if(userOptional.isPresent()){
+                User user = userOptional.get();
+                authContext.setUser(user);
+                return;
             }
-            User user= userOptional.get();
-            authContext.setUser(user);
+            requestContext.abortWith(
+                    Response.status(Response.Status.UNAUTHORIZED)
+                            .entity("No autorizado").build()
+            );
 
         } catch (FirebaseAuthException e) {
             requestContext.abortWith(
@@ -69,6 +88,5 @@ public class FirebaseAuthFilter implements ContainerRequestFilter {
             );
 
         }
-
     }
 }

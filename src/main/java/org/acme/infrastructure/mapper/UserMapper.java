@@ -1,6 +1,6 @@
 package org.acme.infrastructure.mapper;
 
-import org.acme.domain.models.User;
+import org.acme.domain.model.User;
 import org.acme.infrastructure.entities.UserEntity;
 
 public class UserMapper {

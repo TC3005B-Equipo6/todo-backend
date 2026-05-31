@@ -1,4 +1,4 @@
-package org.acme.application.usecase;
+package org.acme.application.usecase.todo;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -16,7 +16,7 @@ public class DeleteTodoUseCase {
         this.todoRepository = todoRepository;
     }
 
-    public boolean execute(UUID id){
-        return todoRepository.deleteById(id);
+    public void execute(UUID id){
+        todoRepository.deleteTodoById(id);
     }
 }

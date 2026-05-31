@@ -3,7 +3,7 @@ package org.acme.infrastructure.repository;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import org.acme.domain.models.User;
+import org.acme.domain.model.User;
 import org.acme.domain.repository.UserRepository;
 import org.acme.infrastructure.entities.UserEntity;
 import org.acme.infrastructure.mapper.UserMapper;
@@ -28,9 +28,7 @@ public class UserRepositoryImpl implements UserRepository, PanacheRepositoryBase
 
     @Override
     public Optional<User> findByFirebaseUuid(String firebaseUuid) {
-        System.out.println("Buscando "+ firebaseUuid);
         Optional<UserEntity> optionalUserEntity= find("firebaseUuid", firebaseUuid).firstResultOptional();
-        System.out.println("Encontre en base de datos "+ optionalUserEntity.get().getFullName());
         return optionalUserEntity.map(this::map);
     }
 

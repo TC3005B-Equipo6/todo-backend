@@ -1,9 +1,7 @@
 package org.acme.domain.repository;
 
-import org.acme.domain.models.Todo;
-import org.acme.domain.models.User;
+import org.acme.domain.model.User;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository {

@@ -1,8 +1,8 @@
-package org.acme.application.usecase;
+package org.acme.application.usecase.todo;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.acme.domain.models.Todo;
+import org.acme.domain.model.Todo;
 import org.acme.domain.repository.TodoRepository;
 
 import java.util.List;

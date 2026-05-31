@@ -1,7 +1,7 @@
 package org.acme.infrastructure.security;
 
 import jakarta.enterprise.context.RequestScoped;
-import org.acme.domain.models.User;
+import org.acme.domain.model.User;
 
 @RequestScoped
 public class AuthContext {

@@ -5,10 +5,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.acme.application.dto.todo.CreateTodoDTO;
-import org.acme.application.usecase.todo.CreateTodoUseCase;
-import org.acme.application.usecase.todo.DeleteTodoUseCase;
-import org.acme.application.usecase.todo.GetTodoByIdUseCase;
-import org.acme.application.usecase.todo.ListUseCase;
+import org.acme.application.dto.todo.UpdateTodoDTO;
+import org.acme.application.usecase.todo.*;
 import org.acme.domain.exception.TodoNotFoundException;
 
 import java.util.UUID;
@@ -20,15 +18,18 @@ public class TodoResource {
 
     private final CreateTodoUseCase createTodoUseCase;
     private final DeleteTodoUseCase deleteTodoUseCase;
+    private final UpdateTodoUseCase updateTodoUseCase;
     private final ListUseCase listUseCase;
     private final GetTodoByIdUseCase getTodoByIdUseCase;
 
     public TodoResource(CreateTodoUseCase createTodoUseCase,
                         DeleteTodoUseCase deleteTodoUseCase,
                         ListUseCase listUseCase,
+                        UpdateTodoUseCase updateTodoUseCase,
                         GetTodoByIdUseCase getTodoByIdUseCase) {
         this.createTodoUseCase = createTodoUseCase;
         this.deleteTodoUseCase = deleteTodoUseCase;
+        this.updateTodoUseCase = updateTodoUseCase;
         this.listUseCase = listUseCase;
         this.getTodoByIdUseCase = getTodoByIdUseCase;
     }
@@ -38,9 +39,17 @@ public class TodoResource {
         return Response.status(Response.Status.CREATED).entity(createTodoUseCase.execute(todoDto)).build();
     }
 
+    @PATCH
+    @Path("/{id}")
+    public Response updateTodo(@PathParam("id") UUID id, UpdateTodoDTO updateTodoDTO){
+        try {
+            return Response.ok(updateTodoUseCase.execute(id, updateTodoDTO)).build();
+        } catch (TodoNotFoundException e){
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
+    }
     @DELETE
     @Path("/{id}")
-    @Transactional
     public Response delete(@PathParam("id") UUID id) {
         try {
             deleteTodoUseCase.execute(id);

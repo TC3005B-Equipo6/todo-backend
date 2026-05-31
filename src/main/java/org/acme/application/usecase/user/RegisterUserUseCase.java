@@ -1,11 +1,11 @@
-package org.acme.application.usecase;
+package org.acme.application.usecase.user;
 
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.acme.application.dto.RegisterUserDto;
-import org.acme.domain.models.User;
+import org.acme.application.dto.todo.RegisterUserDTO;
+import org.acme.domain.model.User;
 import org.acme.domain.repository.UserRepository;
 import org.acme.infrastructure.firebase.FirebaseUserCreator;
 
@@ -23,14 +23,14 @@ public class RegisterUserUseCase {
         this.firebaseUserCreator = firebaseUserCreator;
     }
 
-    public User execute(RegisterUserDto registerUserDto) throws FirebaseAuthException {
+    public User execute(RegisterUserDTO registerUserDto) throws FirebaseAuthException {
         User user = new User();
-        user.setEmail(registerUserDto.getEmail());
-        user.setFullName(registerUserDto.getFullName());
+        user.setEmail(registerUserDto.email());
+        user.setFullName(registerUserDto.fullName());
         user.setRole("USER");
         user.setActive(true);
         user.setId(UUID.randomUUID());
-        UserRecord firebaseUserRecord = firebaseUserCreator.create(user.getEmail(), registerUserDto.getPassword());
+        UserRecord firebaseUserRecord = firebaseUserCreator.create(user.getEmail(), registerUserDto.password());
         user.setFirebaseUuid(firebaseUserRecord.getUid());
         return userRepository.create(user);
     }

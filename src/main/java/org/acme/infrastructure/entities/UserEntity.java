@@ -1,17 +1,16 @@
 package org.acme.infrastructure.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name="users")
+@Table(name="user")
 public class UserEntity {
     @Id
     @JdbcTypeCode(SqlTypes.CHAR)
@@ -38,6 +37,15 @@ public class UserEntity {
 
     @Column(name="updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TodoEntity> todos = new HashSet<>();
+
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TodoListEntity> lists = new HashSet<>();
+
 
     public UUID getId() {
         return id;
@@ -101,5 +109,21 @@ public class UserEntity {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Set<TodoEntity> getTodos() {
+        return todos;
+    }
+
+    public void setTodos(Set<TodoEntity> todos) {
+        this.todos = todos;
+    }
+
+    public Set<TodoListEntity> getLists() {
+        return lists;
+    }
+
+    public void setLists(Set<TodoListEntity> lists) {
+        this.lists = lists;
     }
 }
