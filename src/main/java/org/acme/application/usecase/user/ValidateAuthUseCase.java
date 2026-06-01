@@ -11,7 +11,6 @@ public class ValidateAuthUseCase {
 
     private final AuthContext authContext;
 
-    @Inject
     public ValidateAuthUseCase(AuthContext authContext){
         this.authContext = authContext;
     }
