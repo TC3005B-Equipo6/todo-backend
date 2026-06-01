@@ -3,3 +3,6 @@
 !target/*-runner.jar
 !target/lib/*
 !target/quarkus-app/*
+
+.env
+src/main/resources/firebase-service-account.json
