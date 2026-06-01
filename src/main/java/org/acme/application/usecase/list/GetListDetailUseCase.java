@@ -15,7 +15,7 @@ public class GetListDetailUseCase {
         this.listRepository = listRepository;
     }
 
-    public GetListDetailResponseDTO execute(UUID id){
-        return listRepository.getListDetail(id);
+    public GetListDetailResponseDTO execute(UUID id, String q){
+        return listRepository.getListDetail(id, q);
     }
 }

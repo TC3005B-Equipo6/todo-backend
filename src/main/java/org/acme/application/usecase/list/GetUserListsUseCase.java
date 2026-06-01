@@ -18,7 +18,7 @@ public class GetUserListsUseCase {
         this.authContext = authContext;
     }
 
-    public List<GetUserListsResponseDTO> execute(){
-        return listRepository.getUserLists(authContext.getUser());
+    public List<GetUserListsResponseDTO> execute(String q){
+        return listRepository.getUserLists(authContext.getUser(), q);
     }
 }

@@ -1,5 +1,6 @@
 package org.acme.infrastructure.repository;
 
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -10,6 +11,7 @@ import org.acme.application.dto.todo.GetTodoResponseDTO;
 import org.acme.domain.exception.ListNotFoundException;
 import org.acme.domain.exception.TodoNotFoundException;
 import org.acme.domain.exception.UserNotFoundException;
+import org.acme.domain.model.Todo;
 import org.acme.domain.model.TodoList;
 import org.acme.domain.model.User;
 import org.acme.domain.repository.ListRepository;
@@ -23,6 +25,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class ListRepositoryImpl implements ListRepository, PanacheRepositoryBase<TodoListEntity, UUID> {
@@ -45,21 +48,46 @@ public class ListRepositoryImpl implements ListRepository, PanacheRepositoryBase
     }
 
     @Override
-    public List<GetUserListsResponseDTO> getUserLists(User user) {
-        List<TodoListEntity> entities = find("owner", UserMapper.toEntity(user))
-                .list();
+    public List<GetUserListsResponseDTO> getUserLists(User user, String q) {
+
+        PanacheQuery<TodoListEntity> query =
+                find("owner", UserMapper.toEntity(user));
+
+        if (q != null && !q.isBlank()) {
+            query = find("owner = ?1 and LOWER(name) LIKE LOWER(?2)",
+                    UserMapper.toEntity(user),
+                    "%" + q + "%");
+        }
+
+        List<TodoListEntity> entities = query.list();
+
         return ListMapper.ToDomainList(entities).stream()
                 .map(GetUserListsResponseDTO::from)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public GetListDetailResponseDTO getListDetail(UUID id) {
+    public GetListDetailResponseDTO getListDetail(UUID id, String q) {
+
         TodoListEntity entity = findByIdOptional(id)
                 .orElseThrow(() -> new ListNotFoundException(id));
 
-        List<GetTodoResponseDTO> todos = TodoMapper.toDomainList(entity.getTodos())
-                .stream().map(GetTodoResponseDTO::from).toList();
+        Stream<Todo> todoStream = TodoMapper.toDomainList(entity.getTodos()).stream();
+
+        if (q != null && !q.isBlank()) {
+            String search = q.toLowerCase();
+
+            todoStream = todoStream.filter(todo ->
+                    todo.getTitle().toLowerCase().contains(search)
+                            || (todo.getDescription() != null &&
+                            todo.getDescription().toLowerCase().contains(search))
+            );
+        }
+
+        List<GetTodoResponseDTO> todos = todoStream
+                .map(GetTodoResponseDTO::from)
+                .toList();
+
         return new GetListDetailResponseDTO(id, entity.getName(), todos);
     }
 

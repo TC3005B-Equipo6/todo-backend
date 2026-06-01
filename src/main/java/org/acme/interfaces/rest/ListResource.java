@@ -36,15 +36,15 @@ public class ListResource {
     }
 
     @GET
-    public Response getLists() {
-        return Response.ok(getUserListsUseCase.execute()).build();
+    public Response getLists(@QueryParam("q") String q) {
+        return Response.ok(getUserListsUseCase.execute(q)).build();
     }
 
     @GET
     @Path("/{id}")
-    public Response getListDetail(@PathParam("id") UUID id) {
+    public Response getListDetail(@PathParam("id") UUID id, @QueryParam("q") String q) {
         try {
-            return Response.ok(getListDetailUseCase.execute(id)).build();
+            return Response.ok(getListDetailUseCase.execute(id, q)).build();
         } catch (ListNotFoundException e){
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }

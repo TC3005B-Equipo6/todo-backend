@@ -11,8 +11,8 @@ import java.util.UUID;
 
 public interface ListRepository {
     TodoList createList(TodoList todoList);
-    List<GetUserListsResponseDTO> getUserLists(User user);
-    GetListDetailResponseDTO getListDetail(UUID id);
+    List<GetUserListsResponseDTO> getUserLists(User user, String q);
+    GetListDetailResponseDTO getListDetail(UUID id, String q);
     TodoList updateList(UUID id, UpdateListDTO updateListDTO);
     void deleteList(UUID id);
 }
