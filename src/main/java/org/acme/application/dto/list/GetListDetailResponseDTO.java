@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public record GetListDetailResponseDTO(
         UUID id,
+        String name,
         List<GetTodoResponseDTO> todos
 ) {
 }

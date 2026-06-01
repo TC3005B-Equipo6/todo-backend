@@ -60,7 +60,7 @@ public class ListRepositoryImpl implements ListRepository, PanacheRepositoryBase
 
         List<GetTodoResponseDTO> todos = TodoMapper.toDomainList(entity.getTodos())
                 .stream().map(GetTodoResponseDTO::from).toList();
-        return new GetListDetailResponseDTO(id, todos);
+        return new GetListDetailResponseDTO(id, entity.getName(), todos);
     }
 
     @Override
